@@ -9,38 +9,324 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SupervisorRouteImport } from './routes/supervisor'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SupervisorIndexRouteImport } from './routes/supervisor.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SupervisorSettingsRouteImport } from './routes/supervisor.settings'
+import { Route as SupervisorReportsRouteImport } from './routes/supervisor.reports'
+import { Route as SupervisorNodesRouteImport } from './routes/supervisor.nodes'
+import { Route as SupervisorAlertsRouteImport } from './routes/supervisor.alerts'
+import { Route as SupervisorAccountRouteImport } from './routes/supervisor.account'
+import { Route as SupervisorAboutRouteImport } from './routes/supervisor.about'
+import { Route as AuthSignupRouteImport } from './routes/auth.signup'
+import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AdminSupervisorsRouteImport } from './routes/admin.supervisors'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminSectorsRouteImport } from './routes/admin.sectors'
+import { Route as AdminAccountRouteImport } from './routes/admin.account'
+import { Route as AdminAboutRouteImport } from './routes/admin.about'
+import { Route as SupervisorNodesIndexRouteImport } from './routes/supervisor.nodes.index'
+import { Route as AdminSectorsIndexRouteImport } from './routes/admin.sectors.index'
+import { Route as SupervisorNodesNodeIdRouteImport } from './routes/supervisor.nodes.$nodeId'
+import { Route as AdminSectorsSectorIdRouteImport } from './routes/admin.sectors.$sectorId'
 
+const SupervisorRoute = SupervisorRouteImport.update({
+  id: '/supervisor',
+  path: '/supervisor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SupervisorIndexRoute = SupervisorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SupervisorRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const SupervisorSettingsRoute = SupervisorSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => SupervisorRoute,
+} as any)
+const SupervisorReportsRoute = SupervisorReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => SupervisorRoute,
+} as any)
+const SupervisorNodesRoute = SupervisorNodesRouteImport.update({
+  id: '/nodes',
+  path: '/nodes',
+  getParentRoute: () => SupervisorRoute,
+} as any)
+const SupervisorAlertsRoute = SupervisorAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => SupervisorRoute,
+} as any)
+const SupervisorAccountRoute = SupervisorAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => SupervisorRoute,
+} as any)
+const SupervisorAboutRoute = SupervisorAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => SupervisorRoute,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSupervisorsRoute = AdminSupervisorsRouteImport.update({
+  id: '/supervisors',
+  path: '/supervisors',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSectorsRoute = AdminSectorsRouteImport.update({
+  id: '/sectors',
+  path: '/sectors',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAccountRoute = AdminAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAboutRoute = AdminAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AdminRoute,
+} as any)
+const SupervisorNodesIndexRoute = SupervisorNodesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SupervisorNodesRoute,
+} as any)
+const AdminSectorsIndexRoute = AdminSectorsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminSectorsRoute,
+} as any)
+const SupervisorNodesNodeIdRoute = SupervisorNodesNodeIdRouteImport.update({
+  id: '/$nodeId',
+  path: '/$nodeId',
+  getParentRoute: () => SupervisorNodesRoute,
+} as any)
+const AdminSectorsSectorIdRoute = AdminSectorsSectorIdRouteImport.update({
+  id: '/$sectorId',
+  path: '/$sectorId',
+  getParentRoute: () => AdminSectorsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supervisor': typeof SupervisorRouteWithChildren
+  '/admin/about': typeof AdminAboutRoute
+  '/admin/account': typeof AdminAccountRoute
+  '/admin/sectors': typeof AdminSectorsRouteWithChildren
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/supervisors': typeof AdminSupervisorsRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/supervisor/about': typeof SupervisorAboutRoute
+  '/supervisor/account': typeof SupervisorAccountRoute
+  '/supervisor/alerts': typeof SupervisorAlertsRoute
+  '/supervisor/nodes': typeof SupervisorNodesRouteWithChildren
+  '/supervisor/reports': typeof SupervisorReportsRoute
+  '/supervisor/settings': typeof SupervisorSettingsRoute
+  '/admin/': typeof AdminIndexRoute
+  '/supervisor/': typeof SupervisorIndexRoute
+  '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
+  '/supervisor/nodes/$nodeId': typeof SupervisorNodesNodeIdRoute
+  '/admin/sectors/': typeof AdminSectorsIndexRoute
+  '/supervisor/nodes/': typeof SupervisorNodesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/about': typeof AdminAboutRoute
+  '/admin/account': typeof AdminAccountRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/supervisors': typeof AdminSupervisorsRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/supervisor/about': typeof SupervisorAboutRoute
+  '/supervisor/account': typeof SupervisorAccountRoute
+  '/supervisor/alerts': typeof SupervisorAlertsRoute
+  '/supervisor/reports': typeof SupervisorReportsRoute
+  '/supervisor/settings': typeof SupervisorSettingsRoute
+  '/admin': typeof AdminIndexRoute
+  '/supervisor': typeof SupervisorIndexRoute
+  '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
+  '/supervisor/nodes/$nodeId': typeof SupervisorNodesNodeIdRoute
+  '/admin/sectors': typeof AdminSectorsIndexRoute
+  '/supervisor/nodes': typeof SupervisorNodesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/supervisor': typeof SupervisorRouteWithChildren
+  '/admin/about': typeof AdminAboutRoute
+  '/admin/account': typeof AdminAccountRoute
+  '/admin/sectors': typeof AdminSectorsRouteWithChildren
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/supervisors': typeof AdminSupervisorsRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/signup': typeof AuthSignupRoute
+  '/supervisor/about': typeof SupervisorAboutRoute
+  '/supervisor/account': typeof SupervisorAccountRoute
+  '/supervisor/alerts': typeof SupervisorAlertsRoute
+  '/supervisor/nodes': typeof SupervisorNodesRouteWithChildren
+  '/supervisor/reports': typeof SupervisorReportsRoute
+  '/supervisor/settings': typeof SupervisorSettingsRoute
+  '/admin/': typeof AdminIndexRoute
+  '/supervisor/': typeof SupervisorIndexRoute
+  '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
+  '/supervisor/nodes/$nodeId': typeof SupervisorNodesNodeIdRoute
+  '/admin/sectors/': typeof AdminSectorsIndexRoute
+  '/supervisor/nodes/': typeof SupervisorNodesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/sitemap.xml'
+    | '/supervisor'
+    | '/admin/about'
+    | '/admin/account'
+    | '/admin/sectors'
+    | '/admin/settings'
+    | '/admin/supervisors'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/supervisor/about'
+    | '/supervisor/account'
+    | '/supervisor/alerts'
+    | '/supervisor/nodes'
+    | '/supervisor/reports'
+    | '/supervisor/settings'
+    | '/admin/'
+    | '/supervisor/'
+    | '/admin/sectors/$sectorId'
+    | '/supervisor/nodes/$nodeId'
+    | '/admin/sectors/'
+    | '/supervisor/nodes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/sitemap.xml'
+    | '/admin/about'
+    | '/admin/account'
+    | '/admin/settings'
+    | '/admin/supervisors'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/supervisor/about'
+    | '/supervisor/account'
+    | '/supervisor/alerts'
+    | '/supervisor/reports'
+    | '/supervisor/settings'
+    | '/admin'
+    | '/supervisor'
+    | '/admin/sectors/$sectorId'
+    | '/supervisor/nodes/$nodeId'
+    | '/admin/sectors'
+    | '/supervisor/nodes'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/sitemap.xml'
+    | '/supervisor'
+    | '/admin/about'
+    | '/admin/account'
+    | '/admin/sectors'
+    | '/admin/settings'
+    | '/admin/supervisors'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/supervisor/about'
+    | '/supervisor/account'
+    | '/supervisor/alerts'
+    | '/supervisor/nodes'
+    | '/supervisor/reports'
+    | '/supervisor/settings'
+    | '/admin/'
+    | '/supervisor/'
+    | '/admin/sectors/$sectorId'
+    | '/supervisor/nodes/$nodeId'
+    | '/admin/sectors/'
+    | '/supervisor/nodes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SupervisorRoute: typeof SupervisorRouteWithChildren
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthSignupRoute: typeof AuthSignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/supervisor': {
+      id: '/supervisor'
+      path: '/supervisor'
+      fullPath: '/supervisor'
+      preLoaderRoute: typeof SupervisorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +334,222 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/supervisor/': {
+      id: '/supervisor/'
+      path: '/'
+      fullPath: '/supervisor/'
+      preLoaderRoute: typeof SupervisorIndexRouteImport
+      parentRoute: typeof SupervisorRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/supervisor/settings': {
+      id: '/supervisor/settings'
+      path: '/settings'
+      fullPath: '/supervisor/settings'
+      preLoaderRoute: typeof SupervisorSettingsRouteImport
+      parentRoute: typeof SupervisorRoute
+    }
+    '/supervisor/reports': {
+      id: '/supervisor/reports'
+      path: '/reports'
+      fullPath: '/supervisor/reports'
+      preLoaderRoute: typeof SupervisorReportsRouteImport
+      parentRoute: typeof SupervisorRoute
+    }
+    '/supervisor/nodes': {
+      id: '/supervisor/nodes'
+      path: '/nodes'
+      fullPath: '/supervisor/nodes'
+      preLoaderRoute: typeof SupervisorNodesRouteImport
+      parentRoute: typeof SupervisorRoute
+    }
+    '/supervisor/alerts': {
+      id: '/supervisor/alerts'
+      path: '/alerts'
+      fullPath: '/supervisor/alerts'
+      preLoaderRoute: typeof SupervisorAlertsRouteImport
+      parentRoute: typeof SupervisorRoute
+    }
+    '/supervisor/account': {
+      id: '/supervisor/account'
+      path: '/account'
+      fullPath: '/supervisor/account'
+      preLoaderRoute: typeof SupervisorAccountRouteImport
+      parentRoute: typeof SupervisorRoute
+    }
+    '/supervisor/about': {
+      id: '/supervisor/about'
+      path: '/about'
+      fullPath: '/supervisor/about'
+      preLoaderRoute: typeof SupervisorAboutRouteImport
+      parentRoute: typeof SupervisorRoute
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/supervisors': {
+      id: '/admin/supervisors'
+      path: '/supervisors'
+      fullPath: '/admin/supervisors'
+      preLoaderRoute: typeof AdminSupervisorsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sectors': {
+      id: '/admin/sectors'
+      path: '/sectors'
+      fullPath: '/admin/sectors'
+      preLoaderRoute: typeof AdminSectorsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/account': {
+      id: '/admin/account'
+      path: '/account'
+      fullPath: '/admin/account'
+      preLoaderRoute: typeof AdminAccountRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/about': {
+      id: '/admin/about'
+      path: '/about'
+      fullPath: '/admin/about'
+      preLoaderRoute: typeof AdminAboutRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/supervisor/nodes/': {
+      id: '/supervisor/nodes/'
+      path: '/'
+      fullPath: '/supervisor/nodes/'
+      preLoaderRoute: typeof SupervisorNodesIndexRouteImport
+      parentRoute: typeof SupervisorNodesRoute
+    }
+    '/admin/sectors/': {
+      id: '/admin/sectors/'
+      path: '/'
+      fullPath: '/admin/sectors/'
+      preLoaderRoute: typeof AdminSectorsIndexRouteImport
+      parentRoute: typeof AdminSectorsRoute
+    }
+    '/supervisor/nodes/$nodeId': {
+      id: '/supervisor/nodes/$nodeId'
+      path: '/$nodeId'
+      fullPath: '/supervisor/nodes/$nodeId'
+      preLoaderRoute: typeof SupervisorNodesNodeIdRouteImport
+      parentRoute: typeof SupervisorNodesRoute
+    }
+    '/admin/sectors/$sectorId': {
+      id: '/admin/sectors/$sectorId'
+      path: '/$sectorId'
+      fullPath: '/admin/sectors/$sectorId'
+      preLoaderRoute: typeof AdminSectorsSectorIdRouteImport
+      parentRoute: typeof AdminSectorsRoute
+    }
   }
 }
 
+interface AdminSectorsRouteChildren {
+  AdminSectorsSectorIdRoute: typeof AdminSectorsSectorIdRoute
+  AdminSectorsIndexRoute: typeof AdminSectorsIndexRoute
+}
+
+const AdminSectorsRouteChildren: AdminSectorsRouteChildren = {
+  AdminSectorsSectorIdRoute: AdminSectorsSectorIdRoute,
+  AdminSectorsIndexRoute: AdminSectorsIndexRoute,
+}
+
+const AdminSectorsRouteWithChildren = AdminSectorsRoute._addFileChildren(
+  AdminSectorsRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminAboutRoute: typeof AdminAboutRoute
+  AdminAccountRoute: typeof AdminAccountRoute
+  AdminSectorsRoute: typeof AdminSectorsRouteWithChildren
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminSupervisorsRoute: typeof AdminSupervisorsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAboutRoute: AdminAboutRoute,
+  AdminAccountRoute: AdminAccountRoute,
+  AdminSectorsRoute: AdminSectorsRouteWithChildren,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminSupervisorsRoute: AdminSupervisorsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface SupervisorNodesRouteChildren {
+  SupervisorNodesNodeIdRoute: typeof SupervisorNodesNodeIdRoute
+  SupervisorNodesIndexRoute: typeof SupervisorNodesIndexRoute
+}
+
+const SupervisorNodesRouteChildren: SupervisorNodesRouteChildren = {
+  SupervisorNodesNodeIdRoute: SupervisorNodesNodeIdRoute,
+  SupervisorNodesIndexRoute: SupervisorNodesIndexRoute,
+}
+
+const SupervisorNodesRouteWithChildren = SupervisorNodesRoute._addFileChildren(
+  SupervisorNodesRouteChildren,
+)
+
+interface SupervisorRouteChildren {
+  SupervisorAboutRoute: typeof SupervisorAboutRoute
+  SupervisorAccountRoute: typeof SupervisorAccountRoute
+  SupervisorAlertsRoute: typeof SupervisorAlertsRoute
+  SupervisorNodesRoute: typeof SupervisorNodesRouteWithChildren
+  SupervisorReportsRoute: typeof SupervisorReportsRoute
+  SupervisorSettingsRoute: typeof SupervisorSettingsRoute
+  SupervisorIndexRoute: typeof SupervisorIndexRoute
+}
+
+const SupervisorRouteChildren: SupervisorRouteChildren = {
+  SupervisorAboutRoute: SupervisorAboutRoute,
+  SupervisorAccountRoute: SupervisorAccountRoute,
+  SupervisorAlertsRoute: SupervisorAlertsRoute,
+  SupervisorNodesRoute: SupervisorNodesRouteWithChildren,
+  SupervisorReportsRoute: SupervisorReportsRoute,
+  SupervisorSettingsRoute: SupervisorSettingsRoute,
+  SupervisorIndexRoute: SupervisorIndexRoute,
+}
+
+const SupervisorRouteWithChildren = SupervisorRoute._addFileChildren(
+  SupervisorRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SupervisorRoute: SupervisorRouteWithChildren,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthSignupRoute: AuthSignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
