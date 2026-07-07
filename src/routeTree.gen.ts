@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SupervisorRouteImport } from './routes/supervisor'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -22,6 +23,11 @@ import { Route as AdminAboutRouteImport } from './routes/admin.about'
 import { Route as AdminSectorsIndexRouteImport } from './routes/admin.sectors.index'
 import { Route as AdminSectorsSectorIdRouteImport } from './routes/admin.sectors.$sectorId'
 
+const SupervisorRoute = SupervisorRouteImport.update({
+  id: '/supervisor',
+  path: '/supervisor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -86,6 +92,7 @@ const AdminSectorsSectorIdRoute = AdminSectorsSectorIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/supervisor': typeof SupervisorRoute
   '/admin/about': typeof AdminAboutRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/sectors': typeof AdminSectorsRouteWithChildren
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/supervisor': typeof SupervisorRoute
   '/admin/about': typeof AdminAboutRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/supervisor': typeof SupervisorRoute
   '/admin/about': typeof AdminAboutRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/sectors': typeof AdminSectorsRouteWithChildren
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/supervisor'
     | '/admin/about'
     | '/admin/account'
     | '/admin/sectors'
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/supervisor'
     | '/admin/about'
     | '/admin/account'
     | '/admin/settings'
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/supervisor'
     | '/admin/about'
     | '/admin/account'
     | '/admin/sectors'
@@ -170,12 +182,20 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  SupervisorRoute: typeof SupervisorRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/supervisor': {
+      id: '/supervisor'
+      path: '/supervisor'
+      fullPath: '/supervisor'
+      preLoaderRoute: typeof SupervisorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -300,6 +320,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  SupervisorRoute: SupervisorRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
 }
