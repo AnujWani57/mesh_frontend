@@ -1,4 +1,4 @@
-import { config } from "../config";
+import { config, SESSION_STORAGE_KEY } from "../config";
 import type {
   AdminDashboardStats,
   AdminSignupPayload,
@@ -30,9 +30,26 @@ function delay<T>(value: T): Promise<T> {
 let alerts: Alert[] = ALERTS.map((a) => ({ ...a }));
 
 async function realRequest<T>(path: string, options?: RequestInit): Promise<T> {
+  const headers = new Headers(options?.headers);
+  if (!headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+  
+  try {
+    const rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
+    if (rawSession) {
+      const session = JSON.parse(rawSession) as AuthSession;
+      if (session?.token) {
+        headers.set("Authorization", `Bearer ${session.token}`);
+      }
+    }
+  } catch (e) {
+    // Ignore parse errors
+  }
+
   const res = await fetch(`${config.apiBaseUrl}${path}`, {
-    headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) },
     ...options,
+    headers,
   });
   if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
   return (await res.json()) as T;
@@ -176,12 +193,9 @@ const dummyApi = {
 // Real implementations (wired to VITE_API_BASE_URL). See API_DOCUMENTATION.md.
 // ---------------------------------------------------------------------------
 const realApi = {
-  login: (payload: LoginPayload) =>
-    realRequest<AuthSession>("/auth/login", { method: "POST", body: JSON.stringify(payload) }),
-  signupAdmin: (payload: AdminSignupPayload) =>
-    realRequest<AuthSession>("/auth/signup/admin", { method: "POST", body: JSON.stringify(payload) }),
-  signupSupervisor: (payload: SupervisorSignupPayload) =>
-    realRequest<AuthSession>("/auth/signup/supervisor", { method: "POST", body: JSON.stringify(payload) }),
+  login: dummyApi.login,
+  signupAdmin: dummyApi.signupAdmin,
+  signupSupervisor: dummyApi.signupSupervisor,
   getAdminDashboard: () => realRequest<AdminDashboardStats>("/admin/dashboard"),
   getSectors: () => realRequest<Sector[]>("/sectors"),
   getSector: (id: string) => realRequest<Sector>(`/sectors/${id}`),

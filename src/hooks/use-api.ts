@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../lib/api";
 
 export const useAdminDashboard = () =>
-  useQuery({ queryKey: ["admin-dashboard"], queryFn: () => api.getAdminDashboard() });
+  useQuery({ queryKey: ["admin-dashboard"], queryFn: () => api.getAdminDashboard(), refetchInterval: 3000 });
 
 export const useSectors = () =>
   useQuery({ queryKey: ["sectors"], queryFn: () => api.getSectors() });
@@ -14,19 +14,20 @@ export const useSupervisors = () =>
   useQuery({ queryKey: ["supervisors"], queryFn: () => api.getSupervisors() });
 
 export const useNodes = (sectorId?: string) =>
-  useQuery({ queryKey: ["nodes", sectorId ?? "all"], queryFn: () => api.getNodes(sectorId) });
+  useQuery({ queryKey: ["nodes", sectorId ?? "all"], queryFn: () => api.getNodes(sectorId), refetchInterval: 3000 });
 
 export const useNode = (id: string) =>
-  useQuery({ queryKey: ["node", id], queryFn: () => api.getNode(id), enabled: !!id });
+  useQuery({ queryKey: ["node", id], queryFn: () => api.getNode(id), enabled: !!id, refetchInterval: 3000 });
 
 export const useAlerts = (sectorId?: string) =>
-  useQuery({ queryKey: ["alerts", sectorId ?? "all"], queryFn: () => api.getAlerts(sectorId) });
+  useQuery({ queryKey: ["alerts", sectorId ?? "all"], queryFn: () => api.getAlerts(sectorId), refetchInterval: 3000 });
 
 export const useSupervisorHome = (sectorId: string) =>
   useQuery({
     queryKey: ["supervisor-home", sectorId],
     queryFn: () => api.getSupervisorHome(sectorId),
     enabled: !!sectorId,
+    refetchInterval: 3000,
   });
 
 export function useAcknowledgeAlert() {
