@@ -16,6 +16,7 @@ import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminSectorsRouteImport } from './routes/admin.sectors'
 import { Route as AdminSectorsIndexRouteImport } from './routes/admin.sectors.index'
+import { Route as AdminSectorsSectorIdRouteImport } from './routes/admin.sectors.$sectorId'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -52,6 +53,11 @@ const AdminSectorsIndexRoute = AdminSectorsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminSectorsRoute,
 } as any)
+const AdminSectorsSectorIdRoute = AdminSectorsSectorIdRouteImport.update({
+  id: '/$sectorId',
+  path: '/$sectorId',
+  getParentRoute: () => AdminSectorsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
   '/admin/sectors/': typeof AdminSectorsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
   '/admin/sectors': typeof AdminSectorsIndexRoute
 }
 export interface FileRoutesById {
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
   '/admin/sectors/': typeof AdminSectorsIndexRoute
 }
 export interface FileRouteTypes {
@@ -88,9 +97,16 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/admin/'
+    | '/admin/sectors/$sectorId'
     | '/admin/sectors/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/login' | '/auth/signup' | '/admin' | '/admin/sectors'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/admin'
+    | '/admin/sectors/$sectorId'
+    | '/admin/sectors'
   id:
     | '__root__'
     | '/'
@@ -99,6 +115,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/admin/'
+    | '/admin/sectors/$sectorId'
     | '/admin/sectors/'
   fileRoutesById: FileRoutesById
 }
@@ -160,14 +177,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSectorsIndexRouteImport
       parentRoute: typeof AdminSectorsRoute
     }
+    '/admin/sectors/$sectorId': {
+      id: '/admin/sectors/$sectorId'
+      path: '/$sectorId'
+      fullPath: '/admin/sectors/$sectorId'
+      preLoaderRoute: typeof AdminSectorsSectorIdRouteImport
+      parentRoute: typeof AdminSectorsRoute
+    }
   }
 }
 
 interface AdminSectorsRouteChildren {
+  AdminSectorsSectorIdRoute: typeof AdminSectorsSectorIdRoute
   AdminSectorsIndexRoute: typeof AdminSectorsIndexRoute
 }
 
 const AdminSectorsRouteChildren: AdminSectorsRouteChildren = {
+  AdminSectorsSectorIdRoute: AdminSectorsSectorIdRoute,
   AdminSectorsIndexRoute: AdminSectorsIndexRoute,
 }
 
