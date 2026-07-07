@@ -14,7 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
-import { Route as AdminSectorsRouteImport } from './routes/admin.sectors'
+import { Route as AdminSectorsIndexRouteImport } from './routes/admin.sectors.index'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -41,55 +41,55 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSectorsRoute = AdminSectorsRouteImport.update({
-  id: '/sectors',
-  path: '/sectors',
+const AdminSectorsIndexRoute = AdminSectorsIndexRouteImport.update({
+  id: '/sectors/',
+  path: '/sectors/',
   getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/admin/sectors': typeof AdminSectorsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/sectors/': typeof AdminSectorsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin/sectors': typeof AdminSectorsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/sectors': typeof AdminSectorsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/admin/sectors': typeof AdminSectorsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/sectors/': typeof AdminSectorsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
-    | '/admin/sectors'
     | '/auth/login'
     | '/auth/signup'
     | '/admin/'
+    | '/admin/sectors/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin/sectors' | '/auth/login' | '/auth/signup' | '/admin'
+  to: '/' | '/auth/login' | '/auth/signup' | '/admin' | '/admin/sectors'
   id:
     | '__root__'
     | '/'
     | '/admin'
-    | '/admin/sectors'
     | '/auth/login'
     | '/auth/signup'
     | '/admin/'
+    | '/admin/sectors/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -136,24 +136,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/sectors': {
-      id: '/admin/sectors'
+    '/admin/sectors/': {
+      id: '/admin/sectors/'
       path: '/sectors'
-      fullPath: '/admin/sectors'
-      preLoaderRoute: typeof AdminSectorsRouteImport
+      fullPath: '/admin/sectors/'
+      preLoaderRoute: typeof AdminSectorsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
   }
 }
 
 interface AdminRouteChildren {
-  AdminSectorsRoute: typeof AdminSectorsRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminSectorsIndexRoute: typeof AdminSectorsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminSectorsRoute: AdminSectorsRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminSectorsIndexRoute: AdminSectorsIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
