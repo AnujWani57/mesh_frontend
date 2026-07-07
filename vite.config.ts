@@ -5,22 +5,29 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { loadEnv } from "vite";
 
-export default defineConfig({
-  tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
-    server: { entry: "server" },
-  },
-  vite: {
-    server: {
-      proxy: {
-        "/api": {
-          target: "https://mesh-backend-ob80.onrender.com",
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ""),
+export default (configEnv: any) => {
+  const { mode } = configEnv;
+  const env = loadEnv(mode, process.cwd(), '');
+  const proxyTarget = env.VITE_PROXY_TARGET || "https://mesh-backend-ob80.onrender.com";
+
+  return defineConfig({
+    tanstackStart: {
+      // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
+      // nitro/vite builds from this
+      server: { entry: "server" },
+    },
+    vite: {
+      server: {
+        proxy: {
+          "/api": {
+            target: proxyTarget,
+            changeOrigin: true,
+            rewrite: (path: string) => path.replace(/^\/api/, ""),
+          },
         },
       },
     },
-  },
-});
+  })(configEnv);
+};
