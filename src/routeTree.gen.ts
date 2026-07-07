@@ -18,6 +18,7 @@ import { Route as AdminSupervisorsRouteImport } from './routes/admin.supervisors
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSectorsRouteImport } from './routes/admin.sectors'
 import { Route as AdminAccountRouteImport } from './routes/admin.account'
+import { Route as AdminAboutRouteImport } from './routes/admin.about'
 import { Route as AdminSectorsIndexRouteImport } from './routes/admin.sectors.index'
 import { Route as AdminSectorsSectorIdRouteImport } from './routes/admin.sectors.$sectorId'
 
@@ -66,6 +67,11 @@ const AdminAccountRoute = AdminAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAboutRoute = AdminAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSectorsIndexRoute = AdminSectorsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -80,6 +86,7 @@ const AdminSectorsSectorIdRoute = AdminSectorsSectorIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin/about': typeof AdminAboutRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/sectors': typeof AdminSectorsRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/about': typeof AdminAboutRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/supervisors': typeof AdminSupervisorsRoute
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/admin/about': typeof AdminAboutRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/sectors': typeof AdminSectorsRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/admin/about'
     | '/admin/account'
     | '/admin/sectors'
     | '/admin/settings'
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin/about'
     | '/admin/account'
     | '/admin/settings'
     | '/admin/supervisors'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/admin/about'
     | '/admin/account'
     | '/admin/sectors'
     | '/admin/settings'
@@ -227,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAccountRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/about': {
+      id: '/admin/about'
+      path: '/about'
+      fullPath: '/admin/about'
+      preLoaderRoute: typeof AdminAboutRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/sectors/': {
       id: '/admin/sectors/'
       path: '/'
@@ -259,6 +278,7 @@ const AdminSectorsRouteWithChildren = AdminSectorsRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminAboutRoute: typeof AdminAboutRoute
   AdminAccountRoute: typeof AdminAccountRoute
   AdminSectorsRoute: typeof AdminSectorsRouteWithChildren
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -267,6 +287,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAboutRoute: AdminAboutRoute,
   AdminAccountRoute: AdminAccountRoute,
   AdminSectorsRoute: AdminSectorsRouteWithChildren,
   AdminSettingsRoute: AdminSettingsRoute,
