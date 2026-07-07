@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SupervisorIndexRouteImport } from './routes/supervisor.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SupervisorSettingsRouteImport } from './routes/supervisor.settings'
 import { Route as SupervisorReportsRouteImport } from './routes/supervisor.reports'
 import { Route as SupervisorNodesRouteImport } from './routes/supervisor.nodes'
 import { Route as SupervisorAlertsRouteImport } from './routes/supervisor.alerts'
@@ -54,6 +55,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const SupervisorSettingsRoute = SupervisorSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => SupervisorRoute,
 } as any)
 const SupervisorReportsRoute = SupervisorReportsRouteImport.update({
   id: '/reports',
@@ -146,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/supervisor/alerts': typeof SupervisorAlertsRoute
   '/supervisor/nodes': typeof SupervisorNodesRouteWithChildren
   '/supervisor/reports': typeof SupervisorReportsRoute
+  '/supervisor/settings': typeof SupervisorSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/supervisor/': typeof SupervisorIndexRoute
   '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/supervisor/account': typeof SupervisorAccountRoute
   '/supervisor/alerts': typeof SupervisorAlertsRoute
   '/supervisor/reports': typeof SupervisorReportsRoute
+  '/supervisor/settings': typeof SupervisorSettingsRoute
   '/admin': typeof AdminIndexRoute
   '/supervisor': typeof SupervisorIndexRoute
   '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/supervisor/alerts': typeof SupervisorAlertsRoute
   '/supervisor/nodes': typeof SupervisorNodesRouteWithChildren
   '/supervisor/reports': typeof SupervisorReportsRoute
+  '/supervisor/settings': typeof SupervisorSettingsRoute
   '/admin/': typeof AdminIndexRoute
   '/supervisor/': typeof SupervisorIndexRoute
   '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/supervisor/alerts'
     | '/supervisor/nodes'
     | '/supervisor/reports'
+    | '/supervisor/settings'
     | '/admin/'
     | '/supervisor/'
     | '/admin/sectors/$sectorId'
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/supervisor/account'
     | '/supervisor/alerts'
     | '/supervisor/reports'
+    | '/supervisor/settings'
     | '/admin'
     | '/supervisor'
     | '/admin/sectors/$sectorId'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/supervisor/alerts'
     | '/supervisor/nodes'
     | '/supervisor/reports'
+    | '/supervisor/settings'
     | '/admin/'
     | '/supervisor/'
     | '/admin/sectors/$sectorId'
@@ -303,6 +315,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/supervisor/settings': {
+      id: '/supervisor/settings'
+      path: '/settings'
+      fullPath: '/supervisor/settings'
+      preLoaderRoute: typeof SupervisorSettingsRouteImport
+      parentRoute: typeof SupervisorRoute
     }
     '/supervisor/reports': {
       id: '/supervisor/reports'
@@ -465,6 +484,7 @@ interface SupervisorRouteChildren {
   SupervisorAlertsRoute: typeof SupervisorAlertsRoute
   SupervisorNodesRoute: typeof SupervisorNodesRouteWithChildren
   SupervisorReportsRoute: typeof SupervisorReportsRoute
+  SupervisorSettingsRoute: typeof SupervisorSettingsRoute
   SupervisorIndexRoute: typeof SupervisorIndexRoute
 }
 
@@ -473,6 +493,7 @@ const SupervisorRouteChildren: SupervisorRouteChildren = {
   SupervisorAlertsRoute: SupervisorAlertsRoute,
   SupervisorNodesRoute: SupervisorNodesRouteWithChildren,
   SupervisorReportsRoute: SupervisorReportsRoute,
+  SupervisorSettingsRoute: SupervisorSettingsRoute,
   SupervisorIndexRoute: SupervisorIndexRoute,
 }
 
