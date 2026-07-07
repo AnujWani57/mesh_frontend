@@ -61,7 +61,7 @@ export function SettingsView({ role }: { role: Role }) {
 
   const updateThreshold = (path: string, value: number) => {
     setThresholds((t) => {
-      const next = structuredClone(t) as Record<string, Record<string, number>>;
+      const next = structuredClone(t) as unknown as Record<string, Record<string, number>>;
       const [group, key] = path.split(".");
       next[group][key] = value;
       return next as unknown as Thresholds;
