@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://mesh-backend-ob80.onrender.com/$1"
+    }
+  ]
+}
