@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSectors } from "@/hooks/use-api";
 import type { SensorReadings } from "@/lib/types";
 
-export const Route = createFileRoute("/admin/sectors")({
+export const Route = createFileRoute("/admin/sectors/")({
   head: () => ({ meta: [{ title: "Sectors — MineMesh Admin" }] }),
   component: SectorsPage,
 });
