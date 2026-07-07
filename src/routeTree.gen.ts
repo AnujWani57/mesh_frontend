@@ -22,6 +22,7 @@ import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSectorsRouteImport } from './routes/admin.sectors'
 import { Route as AdminAccountRouteImport } from './routes/admin.account'
 import { Route as AdminAboutRouteImport } from './routes/admin.about'
+import { Route as SupervisorNodesIndexRouteImport } from './routes/supervisor.nodes.index'
 import { Route as AdminSectorsIndexRouteImport } from './routes/admin.sectors.index'
 import { Route as AdminSectorsSectorIdRouteImport } from './routes/admin.sectors.$sectorId'
 
@@ -90,6 +91,11 @@ const AdminAboutRoute = AdminAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => AdminRoute,
 } as any)
+const SupervisorNodesIndexRoute = SupervisorNodesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SupervisorNodesRoute,
+} as any)
 const AdminSectorsIndexRoute = AdminSectorsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -112,11 +118,12 @@ export interface FileRoutesByFullPath {
   '/admin/supervisors': typeof AdminSupervisorsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/supervisor/nodes': typeof SupervisorNodesRoute
+  '/supervisor/nodes': typeof SupervisorNodesRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/supervisor/': typeof SupervisorIndexRoute
   '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
   '/admin/sectors/': typeof AdminSectorsIndexRoute
+  '/supervisor/nodes/': typeof SupervisorNodesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -126,11 +133,11 @@ export interface FileRoutesByTo {
   '/admin/supervisors': typeof AdminSupervisorsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/supervisor/nodes': typeof SupervisorNodesRoute
   '/admin': typeof AdminIndexRoute
   '/supervisor': typeof SupervisorIndexRoute
   '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
   '/admin/sectors': typeof AdminSectorsIndexRoute
+  '/supervisor/nodes': typeof SupervisorNodesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -144,11 +151,12 @@ export interface FileRoutesById {
   '/admin/supervisors': typeof AdminSupervisorsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
-  '/supervisor/nodes': typeof SupervisorNodesRoute
+  '/supervisor/nodes': typeof SupervisorNodesRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/supervisor/': typeof SupervisorIndexRoute
   '/admin/sectors/$sectorId': typeof AdminSectorsSectorIdRoute
   '/admin/sectors/': typeof AdminSectorsIndexRoute
+  '/supervisor/nodes/': typeof SupervisorNodesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -168,6 +176,7 @@ export interface FileRouteTypes {
     | '/supervisor/'
     | '/admin/sectors/$sectorId'
     | '/admin/sectors/'
+    | '/supervisor/nodes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -177,11 +186,11 @@ export interface FileRouteTypes {
     | '/admin/supervisors'
     | '/auth/login'
     | '/auth/signup'
-    | '/supervisor/nodes'
     | '/admin'
     | '/supervisor'
     | '/admin/sectors/$sectorId'
     | '/admin/sectors'
+    | '/supervisor/nodes'
   id:
     | '__root__'
     | '/'
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/supervisor/'
     | '/admin/sectors/$sectorId'
     | '/admin/sectors/'
+    | '/supervisor/nodes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -302,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAboutRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/supervisor/nodes/': {
+      id: '/supervisor/nodes/'
+      path: '/'
+      fullPath: '/supervisor/nodes/'
+      preLoaderRoute: typeof SupervisorNodesIndexRouteImport
+      parentRoute: typeof SupervisorNodesRoute
+    }
     '/admin/sectors/': {
       id: '/admin/sectors/'
       path: '/'
@@ -353,13 +370,25 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface SupervisorNodesRouteChildren {
+  SupervisorNodesIndexRoute: typeof SupervisorNodesIndexRoute
+}
+
+const SupervisorNodesRouteChildren: SupervisorNodesRouteChildren = {
+  SupervisorNodesIndexRoute: SupervisorNodesIndexRoute,
+}
+
+const SupervisorNodesRouteWithChildren = SupervisorNodesRoute._addFileChildren(
+  SupervisorNodesRouteChildren,
+)
+
 interface SupervisorRouteChildren {
-  SupervisorNodesRoute: typeof SupervisorNodesRoute
+  SupervisorNodesRoute: typeof SupervisorNodesRouteWithChildren
   SupervisorIndexRoute: typeof SupervisorIndexRoute
 }
 
 const SupervisorRouteChildren: SupervisorRouteChildren = {
-  SupervisorNodesRoute: SupervisorNodesRoute,
+  SupervisorNodesRoute: SupervisorNodesRouteWithChildren,
   SupervisorIndexRoute: SupervisorIndexRoute,
 }
 
