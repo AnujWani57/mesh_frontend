@@ -263,7 +263,7 @@ const realApi = {
     realRequest<Node[]>(`/nodes${sectorId ? `?sectorId=${sectorId}` : ""}`),
   getNode: (id: string) => realRequest<Node>(`/nodes/${id}`),
   getAlerts: (sectorId?: string) =>
-    realRequest<Alert[]>(`/alerts${sectorId ? `?sectorId=${sectorId}` : ""}`),
+    realRequest<PaginatedResponse<Alert>>(`/alerts?limit=100${sectorId ? `&sectorId=${sectorId}` : ""}`).then((res) => res.data),
   getActiveAlerts: (sectorId?: string, page = 1, limit = 10, hazard?: string) =>
     realRequest<PaginatedResponse<Alert>>(`/alerts/active?page=${page}&limit=${limit}${sectorId ? `&sectorId=${sectorId}` : ""}${hazard ? `&hazard=${encodeURIComponent(hazard)}` : ""}`),
   getResolvedAlerts: (sectorId?: string, page = 1, limit = 5, hazard?: string) =>
