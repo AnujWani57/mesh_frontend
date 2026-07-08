@@ -1,8 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../lib/api";
 
-export const useAdminDashboard = () =>
-  useQuery({ queryKey: ["admin-dashboard"], queryFn: () => api.getAdminDashboard(), refetchInterval: 3000 });
+export const useAdminStats = () =>
+  useQuery({ queryKey: ["admin-stats"], queryFn: () => api.getAdminStats(), refetchInterval: 3000 });
+
+export const useAdminEnvironment = () =>
+  useQuery({ queryKey: ["admin-environment"], queryFn: () => api.getAdminEnvironment(), refetchInterval: 3000 });
 
 export const useSectors = () =>
   useQuery({ queryKey: ["sectors"], queryFn: () => api.getSectors() });
@@ -22,19 +25,43 @@ export const useNode = (id: string) =>
 export const useAlerts = (sectorId?: string) =>
   useQuery({ queryKey: ["alerts", sectorId ?? "all"], queryFn: () => api.getAlerts(sectorId), refetchInterval: 3000 });
 
-export const useActiveAlerts = (sectorId?: string, page = 1, limit = 10) =>
-  useQuery({ queryKey: ["alerts-active", sectorId ?? "all", page, limit], queryFn: () => api.getActiveAlerts(sectorId, page, limit), refetchInterval: 3000 });
+export const useActiveAlerts = (sectorId?: string, page = 1, limit = 10, hazard?: string) =>
+  useQuery({
+    queryKey: ["alerts-active", sectorId ?? "all", page, limit, hazard ?? "any"],
+    queryFn: () => api.getActiveAlerts(sectorId, page, limit, hazard),
+    refetchInterval: 3000,
+  });
 
-export const useResolvedAlerts = (sectorId?: string, page = 1, limit = 5) =>
-  useQuery({ queryKey: ["alerts-resolved", sectorId ?? "all", page, limit], queryFn: () => api.getResolvedAlerts(sectorId, page, limit), refetchInterval: 3000 });
+export const useResolvedAlerts = (sectorId?: string, page = 1, limit = 5, hazard?: string) =>
+  useQuery({
+    queryKey: ["alerts-resolved", sectorId ?? "all", page, limit, hazard ?? "any"],
+    queryFn: () => api.getResolvedAlerts(sectorId, page, limit, hazard),
+    refetchInterval: 3000,
+  });
 
 export const useAlertsSummary = (sectorId?: string) =>
   useQuery({ queryKey: ["alerts-summary", sectorId ?? "all"], queryFn: () => api.getAlertsSummary(sectorId), refetchInterval: 3000 });
 
-export const useSupervisorHome = (sectorId: string) =>
+export const useSupervisorStats = (sectorId: string) =>
   useQuery({
-    queryKey: ["supervisor-home", sectorId],
-    queryFn: () => api.getSupervisorHome(sectorId),
+    queryKey: ["supervisor-stats", sectorId],
+    queryFn: () => api.getSupervisorStats(sectorId),
+    enabled: !!sectorId,
+    refetchInterval: 3000,
+  });
+
+export const useSupervisorEnvironment = (sectorId: string) =>
+  useQuery({
+    queryKey: ["supervisor-environment", sectorId],
+    queryFn: () => api.getSupervisorEnvironment(sectorId),
+    enabled: !!sectorId,
+    refetchInterval: 3000,
+  });
+
+export const useSupervisorNodes = (sectorId: string) =>
+  useQuery({
+    queryKey: ["supervisor-nodes", sectorId],
+    queryFn: () => api.getSupervisorNodes(sectorId),
     enabled: !!sectorId,
     refetchInterval: 3000,
   });
@@ -48,8 +75,8 @@ export function useAcknowledgeAlert() {
       qc.invalidateQueries({ queryKey: ["alerts-resolved"] });
       qc.invalidateQueries({ queryKey: ["alerts-summary"] });
       qc.invalidateQueries({ queryKey: ["alerts"] }); // keep for any lingering usage
-      qc.invalidateQueries({ queryKey: ["admin-dashboard"] });
-      qc.invalidateQueries({ queryKey: ["supervisor-home"] });
+      qc.invalidateQueries({ queryKey: ["admin-stats"] });
+      qc.invalidateQueries({ queryKey: ["supervisor-stats"] });
     },
   });
 }

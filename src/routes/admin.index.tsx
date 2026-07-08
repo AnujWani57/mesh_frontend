@@ -15,7 +15,7 @@ import { GasTrendChart } from "@/components/gas-trend-chart";
 import { HealthPie } from "@/components/health-pie";
 import { StatusBadge } from "@/components/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAdminDashboard } from "@/hooks/use-api";
+import { useAdminStats, useAdminEnvironment, useActiveAlerts } from "@/hooks/use-api";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({ meta: [{ title: "Dashboard — MineMesh Admin" }] }),
@@ -23,9 +23,11 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
-  const { data, isLoading } = useAdminDashboard();
+  const { data: stats, isLoading: statsLoading } = useAdminStats();
+  const { data: env, isLoading: envLoading } = useAdminEnvironment();
+  const { data: alertsData, isLoading: alertsLoading } = useActiveAlerts(undefined, 1, 5);
 
-  if (isLoading || !data) {
+  if (statsLoading || envLoading || alertsLoading || !stats || !env || !alertsData) {
     return <p className="text-muted-foreground">Loading overview…</p>;
   }
 
@@ -34,35 +36,35 @@ function AdminDashboard() {
       <PageHeader title="Mine Overview" description="Complete real-time status of the mine." />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        <StatCard label="Sectors" value={data.totalSectors} icon={Grid3x3} />
-        <StatCard label="Nodes" value={data.totalNodes} icon={Waypoints} />
-        <StatCard label="Devices" value={data.totalDevices} icon={Radio} />
-        <StatCard label="Active Devices" value={data.activeDevices} icon={Activity} accent="safe" />
+        <StatCard label="Sectors" value={stats.totalSectors} icon={Grid3x3} />
+        <StatCard label="Nodes" value={stats.totalNodes} icon={Waypoints} />
+        <StatCard label="Devices" value={stats.totalDevices} icon={Radio} />
+        <StatCard label="Active Devices" value={stats.activeDevices} icon={Activity} accent="safe" />
         <StatCard
           label="Inactive"
-          value={data.inactiveDevices}
+          value={stats.inactiveDevices}
           icon={Radio}
-          accent={data.inactiveDevices > 0 ? "warning" : "safe"}
+          accent={stats.inactiveDevices > 0 ? "warning" : "safe"}
         />
         <StatCard
           label="Active Alerts"
-          value={data.activeAlerts}
+          value={stats.activeAlerts}
           icon={Bell}
-          accent={data.activeAlerts > 0 ? "critical" : "safe"}
+          accent={stats.activeAlerts > 0 ? "critical" : "safe"}
         />
-        <StatCard label="Workers Inside" value={data.workersInside} icon={HardHat} />
+        <StatCard label="Workers Inside" value={stats.workersInside} icon={HardHat} />
       </div>
 
       <h2 className="mb-3 mt-8 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
         Average Sensor Readings
       </h2>
-      <ReadingCards readings={data.averageReadings} />
+      <ReadingCards readings={env.averageReadings} />
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <GasTrendChart data={data.trends} />
+          <GasTrendChart data={env.trends} />
         </div>
-        <HealthPie health={data.health} />
+        <HealthPie health={env.health} />
       </div>
 
       <Card className="mt-6">
@@ -70,7 +72,7 @@ function AdminDashboard() {
           <CardTitle className="text-base">Recent Alerts</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {data.recentAlerts.map((a) => (
+          {alertsData.data.map((a) => (
             <div
               key={a.id}
               className="flex items-center justify-between gap-3 rounded-lg border p-3"

@@ -39,6 +39,7 @@ export function GasTrendChart({
               <XAxis dataKey="time" stroke="var(--muted-foreground)" fontSize={12} />
               <YAxis stroke="var(--muted-foreground)" fontSize={12} />
               <Tooltip
+                formatter={(value: number) => value.toFixed(1)}
                 contentStyle={{
                   background: "var(--popover)",
                   border: "1px solid var(--border)",

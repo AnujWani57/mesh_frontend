@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -9,6 +10,7 @@ import {
 import { AlertTriangle, MapPin, Radio, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { SosEvent } from "@/lib/types";
+import { useSosStream } from "@/hooks/use-sos-stream";
 
 interface SosContextValue {
   triggerSos: (event: SosEvent) => void;
@@ -21,6 +23,18 @@ export function SosProvider({ children }: { children: ReactNode }) {
 
   const triggerSos = useCallback((e: SosEvent) => setEvent(e), []);
   const value = useMemo(() => ({ triggerSos }), [triggerSos]);
+
+  // Connect to backend SSE
+  useSosStream(triggerSos);
+
+  useEffect(() => {
+    if (event) {
+      const timer = setTimeout(() => {
+        setEvent(null);
+      }, 15000);
+      return () => clearTimeout(timer);
+    }
+  }, [event]);
 
   return (
     <SosContext.Provider value={value}>
@@ -41,31 +55,27 @@ function SosOverlay({ event, onAcknowledge }: { event: SosEvent; onAcknowledge: 
     <div
       role="alertdialog"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-critical/95 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4"
     >
-      <div className="animate-in zoom-in-95 w-full max-w-lg rounded-2xl border border-white/20 bg-critical p-6 text-critical-foreground shadow-2xl sm:p-8">
-        <div className="flex flex-col items-center text-center">
-          <div className="animate-pulse rounded-full bg-white/20 p-4">
-            <AlertTriangle className="h-12 w-12" />
+      <div className="animate-in zoom-in-95 fade-in w-full max-w-md rounded-2xl border border-white/20 bg-critical p-6 text-critical-foreground shadow-2xl sm:p-8">
+        <div className="flex items-center gap-4">
+          <div className="animate-pulse rounded-full bg-white/20 p-3">
+            <AlertTriangle className="h-8 w-8" />
           </div>
-          <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">EMERGENCY SOS</h2>
-          <p className="mt-1 text-lg font-semibold opacity-90">{event.reason}</p>
+          <div>
+            <h2 className="text-xl font-black tracking-tight sm:text-2xl">EMERGENCY SOS</h2>
+            <p className="text-sm font-semibold opacity-90">{event.reason}</p>
+          </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-3 rounded-xl bg-black/20 p-4 text-sm sm:grid-cols-2">
+        <div className="mt-6 grid grid-cols-1 gap-2 rounded-xl bg-black/20 p-4 text-sm">
           <Detail icon={User} label="Worker" value={event.workerName} />
           <Detail icon={Radio} label="Wearable ID" value={event.deviceId} />
           <Detail icon={Radio} label="Sector" value={event.sectorName} />
-          <Detail icon={Radio} label="Node" value={event.nodeId} />
           <Detail
             icon={MapPin}
             label="Location"
             value={`X=${event.coordinates.x}  Y=${event.coordinates.y}  Z=${event.coordinates.z}`}
-          />
-          <Detail
-            icon={AlertTriangle}
-            label="Time"
-            value={new Date(event.time).toLocaleTimeString()}
           />
         </div>
 
@@ -76,7 +86,7 @@ function SosOverlay({ event, onAcknowledge }: { event: SosEvent; onAcknowledge: 
           ACKNOWLEDGE
         </Button>
         <p className="mt-3 text-center text-xs opacity-80">
-          This alert stays on screen until acknowledged.
+          Auto-dismisses in 15s if ignored.
         </p>
       </div>
     </div>

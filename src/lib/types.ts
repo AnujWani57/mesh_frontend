@@ -185,7 +185,7 @@ export interface TrendPoint {
   oxygen: number;
 }
 
-export interface AdminDashboardStats {
+export interface AdminStats {
   totalSectors: number;
   totalNodes: number;
   totalDevices: number;
@@ -193,23 +193,32 @@ export interface AdminDashboardStats {
   inactiveDevices: number;
   activeAlerts: number;
   workersInside: number;
+}
+
+export interface AdminEnvironment {
   averageReadings: SensorReadings;
   trends: TrendPoint[];
   health: { safe: number; warning: number; critical: number };
-  recentAlerts: Alert[];
 }
 
-export interface SupervisorHomeStats {
+export interface SupervisorStats {
   sectorId: string;
   sectorName: string;
-  averageReadings: SensorReadings;
   status: HealthStatus;
-  trends: TrendPoint[];
-  nodes: { id: string; name: string; status: DeviceStatus }[];
   totalWorkers: number;
   devicesOnline: number;
   sosCount: number;
-  recentAlerts: Alert[];
+}
+
+export interface SupervisorEnvironment {
+  averageReadings: SensorReadings;
+  trends: TrendPoint[];
+}
+
+export interface NodeSummary {
+  id: string;
+  name: string;
+  status: DeviceStatus;
 }
 
 export interface Thresholds {

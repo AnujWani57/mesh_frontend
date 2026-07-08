@@ -1,16 +1,19 @@
 import { config, SESSION_STORAGE_KEY } from "../config";
 import type {
-  AdminDashboardStats,
+  AdminStats,
+  AdminEnvironment,
   AdminSignupPayload,
   Alert,
   AlertsSummary,
   AuthSession,
   LoginPayload,
   Node,
+  NodeSummary,
   PaginatedResponse,
   Sector,
   Supervisor,
-  SupervisorHomeStats,
+  SupervisorStats,
+  SupervisorEnvironment,
   SupervisorSignupPayload,
   User,
 } from "../types";
@@ -101,7 +104,7 @@ const dummyApi = {
     return delay({ token: `dummy-token-${user.id}`, user });
   },
 
-  async getAdminDashboard(): Promise<AdminDashboardStats> {
+  async getAdminStats(): Promise<AdminStats> {
     const totalDevices = NODES.reduce((n, node) => n + node.devices.length, 0);
     const activeDevices = NODES.reduce(
       (n, node) => n + node.devices.filter((d) => d.status === "online").length,
@@ -115,6 +118,11 @@ const dummyApi = {
       inactiveDevices: totalDevices - activeDevices,
       activeAlerts: alerts.filter((a) => a.state === "active").length,
       workersInside: activeDevices,
+    });
+  },
+
+  async getAdminEnvironment(): Promise<AdminEnvironment> {
+    return delay({
       averageReadings: { temperature: 31, humidity: 61, methane: 1180, carbonMonoxide: 17, oxygen: 20.3 },
       trends: makeTrends({ temperature: 31, humidity: 61, methane: 1180, carbonMonoxide: 17, oxygen: 20.3 }),
       health: {
@@ -122,7 +130,6 @@ const dummyApi = {
         warning: SECTORS.filter((s) => s.status === "warning").length,
         critical: SECTORS.filter((s) => s.status === "critical").length,
       },
-      recentAlerts: alerts.slice(0, 5),
     });
   },
 
@@ -152,8 +159,9 @@ const dummyApi = {
     return delay(list.map((a) => ({ ...a })));
   },
 
-  async getActiveAlerts(sectorId?: string, page = 1, limit = 10): Promise<PaginatedResponse<Alert>> {
-    const list = sectorId ? alerts.filter((a) => a.sectorId === sectorId) : alerts;
+  async getActiveAlerts(sectorId?: string, page = 1, limit = 10, hazard?: string): Promise<PaginatedResponse<Alert>> {
+    let list = sectorId ? alerts.filter((a) => a.sectorId === sectorId) : alerts;
+    if (hazard) list = list.filter((a) => a.hazard === hazard);
     const active = list.filter((a) => a.state === "active");
     const start = (page - 1) * limit;
     const data = active.slice(start, start + limit);
@@ -168,8 +176,9 @@ const dummyApi = {
     });
   },
 
-  async getResolvedAlerts(sectorId?: string, page = 1, limit = 5): Promise<PaginatedResponse<Alert>> {
-    const list = sectorId ? alerts.filter((a) => a.sectorId === sectorId) : alerts;
+  async getResolvedAlerts(sectorId?: string, page = 1, limit = 5, hazard?: string): Promise<PaginatedResponse<Alert>> {
+    let list = sectorId ? alerts.filter((a) => a.sectorId === sectorId) : alerts;
+    if (hazard) list = list.filter((a) => a.hazard === hazard);
     const resolved = list.filter((a) => a.state === "resolved");
     const start = (page - 1) * limit;
     const data = resolved.slice(start, start + limit);
@@ -203,34 +212,38 @@ const dummyApi = {
     return delay({ ...updated });
   },
 
-  async getSupervisorHome(sectorId: string): Promise<SupervisorHomeStats> {
+  async getSupervisorStats(sectorId: string): Promise<SupervisorStats> {
     const sector = SECTORS.find((s) => s.id === sectorId)!;
     const nodes = NODES.filter((n) => n.sectorId === sectorId);
     const devices = nodes.flatMap((n) => n.devices);
     return delay({
       sectorId,
       sectorName: sector?.name ?? sectorId,
-      averageReadings: sector?.averageReadings ?? {
-        temperature: 30,
-        humidity: 60,
-        methane: 800,
-        carbonMonoxide: 15,
-        oxygen: 20.5,
-      },
       status: sector?.status ?? "safe",
-      trends: makeTrends(sector?.averageReadings ?? {
-        temperature: 30,
-        humidity: 60,
-        methane: 800,
-        carbonMonoxide: 15,
-        oxygen: 20.5,
-      }),
-      nodes: nodes.map((n) => ({ id: n.id, name: n.name, status: n.status })),
       totalWorkers: devices.length,
       devicesOnline: devices.filter((d) => d.status === "online").length,
       sosCount: alerts.filter((a) => a.sectorId === sectorId && a.hazard === "SOS Button Pressed").length,
-      recentAlerts: alerts.filter((a) => a.sectorId === sectorId).slice(0, 5),
     });
+  },
+
+  async getSupervisorEnvironment(sectorId: string): Promise<SupervisorEnvironment> {
+    const sector = SECTORS.find((s) => s.id === sectorId)!;
+    const baseReadings = sector?.averageReadings ?? {
+      temperature: 30,
+      humidity: 60,
+      methane: 800,
+      carbonMonoxide: 15,
+      oxygen: 20.5,
+    };
+    return delay({
+      averageReadings: baseReadings,
+      trends: makeTrends(baseReadings),
+    });
+  },
+
+  async getSupervisorNodes(sectorId: string): Promise<NodeSummary[]> {
+    const nodes = NODES.filter((n) => n.sectorId === sectorId);
+    return delay(nodes.map((n) => ({ id: n.id, name: n.name, status: n.status })));
   },
 };
 
@@ -241,7 +254,8 @@ const realApi = {
   login: dummyApi.login,
   signupAdmin: dummyApi.signupAdmin,
   signupSupervisor: dummyApi.signupSupervisor,
-  getAdminDashboard: () => realRequest<AdminDashboardStats>("/admin/dashboard"),
+  getAdminStats: () => realRequest<AdminStats>("/admin/stats"),
+  getAdminEnvironment: () => realRequest<AdminEnvironment>("/admin/environment"),
   getSectors: () => realRequest<Sector[]>("/sectors"),
   getSector: (id: string) => realRequest<Sector>(`/sectors/${id}`),
   getSupervisors: () => realRequest<Supervisor[]>("/supervisors"),
@@ -250,16 +264,17 @@ const realApi = {
   getNode: (id: string) => realRequest<Node>(`/nodes/${id}`),
   getAlerts: (sectorId?: string) =>
     realRequest<Alert[]>(`/alerts${sectorId ? `?sectorId=${sectorId}` : ""}`),
-  getActiveAlerts: (sectorId?: string, page = 1, limit = 10) =>
-    realRequest<PaginatedResponse<Alert>>(`/alerts/active?page=${page}&limit=${limit}${sectorId ? `&sectorId=${sectorId}` : ""}`),
-  getResolvedAlerts: (sectorId?: string, page = 1, limit = 5) =>
-    realRequest<PaginatedResponse<Alert>>(`/alerts/resolved?page=${page}&limit=${limit}${sectorId ? `&sectorId=${sectorId}` : ""}`),
+  getActiveAlerts: (sectorId?: string, page = 1, limit = 10, hazard?: string) =>
+    realRequest<PaginatedResponse<Alert>>(`/alerts/active?page=${page}&limit=${limit}${sectorId ? `&sectorId=${sectorId}` : ""}${hazard ? `&hazard=${encodeURIComponent(hazard)}` : ""}`),
+  getResolvedAlerts: (sectorId?: string, page = 1, limit = 5, hazard?: string) =>
+    realRequest<PaginatedResponse<Alert>>(`/alerts/resolved?page=${page}&limit=${limit}${sectorId ? `&sectorId=${sectorId}` : ""}${hazard ? `&hazard=${encodeURIComponent(hazard)}` : ""}`),
   getAlertsSummary: (sectorId?: string) =>
     realRequest<AlertsSummary>(`/alerts/summary${sectorId ? `?sectorId=${sectorId}` : ""}`),
   acknowledgeAlert: (id: string, by: string) =>
     realRequest<Alert>(`/alerts/${id}/acknowledge`, { method: "POST", body: JSON.stringify({ by }) }),
-  getSupervisorHome: (sectorId: string) =>
-    realRequest<SupervisorHomeStats>(`/supervisor/home?sectorId=${sectorId}`),
+  getSupervisorStats: (sectorId: string) => realRequest<SupervisorStats>(`/supervisor/sector/${sectorId}/stats`),
+  getSupervisorEnvironment: (sectorId: string) => realRequest<SupervisorEnvironment>(`/supervisor/sector/${sectorId}/environment`),
+  getSupervisorNodes: (sectorId: string) => realRequest<NodeSummary[]>(`/supervisor/sector/${sectorId}/nodes`),
 };
 
 export const api = config.useDummyApi ? dummyApi : realApi;

@@ -33,7 +33,7 @@ export function ReadingCards({ readings }: { readings: SensorReadings }) {
               />
             </div>
             <p className="mt-3 text-xl font-bold">
-              {value}
+              {typeof value === "number" ? value.toFixed(1) : value}
               <span className="ml-1 text-sm font-medium text-muted-foreground">{unit}</span>
             </p>
             <p className="text-xs text-muted-foreground">{label}</p>

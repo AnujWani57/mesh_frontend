@@ -180,6 +180,18 @@ Response `200`: single `Node` (with `devices`).
 `hazard` ∈ `SOS Button Pressed | Methane High | Carbon Monoxide High | Low Oxygen | High Temperature | High Humidity`
 `state` ∈ `active | resolved`
 
+#### GET /alerts/active
+Query Parameters: `sectorId` (optional), `page` (default: 1), `limit` (default: 10), `hazard` (optional filter, e.g., "SOS Button Pressed").
+Response `200`: `PaginatedResponse<Alert>`
+
+#### GET /alerts/resolved
+Query Parameters: `sectorId` (optional), `page` (default: 1), `limit` (default: 5), `hazard` (optional filter).
+Response `200`: `PaginatedResponse<Alert>`
+
+#### GET /alerts/summary
+Query Parameters: `sectorId` (optional).
+Response `200`: `{ activeCount: number, resolvedCount: number, totalToday: number }`
+
 #### POST /alerts/:id/acknowledge
 Request: `{ "by": "Rahul Sharma" }`
 Response `200`: the updated `Alert` with `state: "resolved"` and `acknowledgedBy` set.
