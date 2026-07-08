@@ -3,9 +3,11 @@ import type {
   AdminDashboardStats,
   AdminSignupPayload,
   Alert,
+  AlertsSummary,
   AuthSession,
   LoginPayload,
   Node,
+  PaginatedResponse,
   Sector,
   Supervisor,
   SupervisorHomeStats,
@@ -150,6 +152,49 @@ const dummyApi = {
     return delay(list.map((a) => ({ ...a })));
   },
 
+  async getActiveAlerts(sectorId?: string, page = 1, limit = 10): Promise<PaginatedResponse<Alert>> {
+    const list = sectorId ? alerts.filter((a) => a.sectorId === sectorId) : alerts;
+    const active = list.filter((a) => a.state === "active");
+    const start = (page - 1) * limit;
+    const data = active.slice(start, start + limit);
+    return delay({
+      data: data.map((a) => ({ ...a })),
+      meta: {
+        page,
+        limit,
+        totalCount: active.length,
+        totalPages: Math.ceil(active.length / limit),
+      },
+    });
+  },
+
+  async getResolvedAlerts(sectorId?: string, page = 1, limit = 5): Promise<PaginatedResponse<Alert>> {
+    const list = sectorId ? alerts.filter((a) => a.sectorId === sectorId) : alerts;
+    const resolved = list.filter((a) => a.state === "resolved");
+    const start = (page - 1) * limit;
+    const data = resolved.slice(start, start + limit);
+    return delay({
+      data: data.map((a) => ({ ...a })),
+      meta: {
+        page,
+        limit,
+        totalCount: resolved.length,
+        totalPages: Math.ceil(resolved.length / limit),
+      },
+    });
+  },
+
+  async getAlertsSummary(sectorId?: string): Promise<AlertsSummary> {
+    const list = sectorId ? alerts.filter((a) => a.sectorId === sectorId) : alerts;
+    const activeCount = list.filter((a) => a.state === "active").length;
+    const resolvedCount = list.filter((a) => a.state === "resolved").length;
+    return delay({
+      activeCount,
+      resolvedCount,
+      totalToday: list.length,
+    });
+  },
+
   async acknowledgeAlert(id: string, by: string): Promise<Alert> {
     alerts = alerts.map((a) =>
       a.id === id ? { ...a, state: "resolved", acknowledgedBy: by } : a,
@@ -205,6 +250,12 @@ const realApi = {
   getNode: (id: string) => realRequest<Node>(`/nodes/${id}`),
   getAlerts: (sectorId?: string) =>
     realRequest<Alert[]>(`/alerts${sectorId ? `?sectorId=${sectorId}` : ""}`),
+  getActiveAlerts: (sectorId?: string, page = 1, limit = 10) =>
+    realRequest<PaginatedResponse<Alert>>(`/alerts/active?page=${page}&limit=${limit}${sectorId ? `&sectorId=${sectorId}` : ""}`),
+  getResolvedAlerts: (sectorId?: string, page = 1, limit = 5) =>
+    realRequest<PaginatedResponse<Alert>>(`/alerts/resolved?page=${page}&limit=${limit}${sectorId ? `&sectorId=${sectorId}` : ""}`),
+  getAlertsSummary: (sectorId?: string) =>
+    realRequest<AlertsSummary>(`/alerts/summary${sectorId ? `?sectorId=${sectorId}` : ""}`),
   acknowledgeAlert: (id: string, by: string) =>
     realRequest<Alert>(`/alerts/${id}/acknowledge`, { method: "POST", body: JSON.stringify({ by }) }),
   getSupervisorHome: (sectorId: string) =>

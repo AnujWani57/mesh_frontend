@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard-shell";
 import { StatCard } from "@/components/stat-card";
@@ -14,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAlerts, useAcknowledgeAlert } from "@/hooks/use-api";
+import { useActiveAlerts, useResolvedAlerts, useAlertsSummary, useAcknowledgeAlert } from "@/hooks/use-api";
 import { useAuth } from "@/lib/auth/auth-context";
 
 export const Route = createFileRoute("/supervisor/alerts")({
@@ -24,13 +25,20 @@ export const Route = createFileRoute("/supervisor/alerts")({
 
 function AlertsPage() {
   const { user } = useAuth();
-  const { data: alerts, isLoading } = useAlerts(user?.sectorId);
+  const [activePage, setActivePage] = useState(1);
+  const [resolvedPage, setResolvedPage] = useState(1);
+
+  const { data: activeData, isLoading: isActiveLoading } = useActiveAlerts(user?.sectorId, activePage, 10);
+  const { data: resolvedData, isLoading: isResolvedLoading } = useResolvedAlerts(user?.sectorId, resolvedPage, 5);
+  const { data: summary, isLoading: isSummaryLoading } = useAlertsSummary(user?.sectorId);
   const acknowledge = useAcknowledgeAlert();
 
-  if (isLoading || !alerts) return <p className="text-muted-foreground">Loading alerts…</p>;
+  if (isActiveLoading || isResolvedLoading || isSummaryLoading || !activeData || !resolvedData || !summary) {
+    return <p className="text-muted-foreground">Loading alerts…</p>;
+  }
 
-  const active = alerts.filter((a) => a.state === "active");
-  const resolved = alerts.filter((a) => a.state === "resolved");
+  const active = activeData.data;
+  const resolved = resolvedData.data;
 
   const handleAck = (id: string) => {
     acknowledge.mutate(
@@ -44,9 +52,9 @@ function AlertsPage() {
       <PageHeader title="Alerts" description="Threshold breaches and SOS events in your sector." />
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <StatCard label="Active Alerts" value={active.length} icon={Bell} accent={active.length ? "critical" : "safe"} />
-        <StatCard label="Resolved" value={resolved.length} icon={CheckCircle2} accent="safe" />
-        <StatCard label="Total Today" value={alerts.length} icon={ListChecks} />
+        <StatCard label="Active Alerts" value={summary.activeCount} icon={Bell} accent={summary.activeCount ? "critical" : "safe"} />
+        <StatCard label="Resolved" value={summary.resolvedCount} icon={CheckCircle2} accent="safe" />
+        <StatCard label="Total Today" value={summary.totalToday} icon={ListChecks} />
       </div>
 
       <Card className="mt-6 overflow-hidden p-0">
@@ -93,6 +101,29 @@ function AlertsPage() {
             </TableBody>
           </Table>
         </div>
+        {activeData.meta.totalPages > 1 && (
+          <div className="flex items-center justify-end space-x-2 p-4 border-t">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setActivePage((p) => Math.max(1, p - 1))}
+              disabled={activePage === 1}
+            >
+              Previous
+            </Button>
+            <div className="text-sm text-muted-foreground">
+              Page {activeData.meta.page} of {activeData.meta.totalPages}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setActivePage((p) => p + 1)}
+              disabled={activePage >= activeData.meta.totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </Card>
 
       {resolved.length > 0 && (
@@ -127,6 +158,29 @@ function AlertsPage() {
                 </TableBody>
               </Table>
             </div>
+            {resolvedData.meta.totalPages > 1 && (
+              <div className="flex items-center justify-end space-x-2 p-4 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setResolvedPage((p) => Math.max(1, p - 1))}
+                  disabled={resolvedPage === 1}
+                >
+                  Previous
+                </Button>
+                <div className="text-sm text-muted-foreground">
+                  Page {resolvedData.meta.page} of {resolvedData.meta.totalPages}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setResolvedPage((p) => p + 1)}
+                  disabled={resolvedPage >= resolvedData.meta.totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </Card>
         </>
       )}

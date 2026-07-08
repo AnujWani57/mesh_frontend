@@ -22,6 +22,15 @@ export const useNode = (id: string) =>
 export const useAlerts = (sectorId?: string) =>
   useQuery({ queryKey: ["alerts", sectorId ?? "all"], queryFn: () => api.getAlerts(sectorId), refetchInterval: 3000 });
 
+export const useActiveAlerts = (sectorId?: string, page = 1, limit = 10) =>
+  useQuery({ queryKey: ["alerts-active", sectorId ?? "all", page, limit], queryFn: () => api.getActiveAlerts(sectorId, page, limit), refetchInterval: 3000 });
+
+export const useResolvedAlerts = (sectorId?: string, page = 1, limit = 5) =>
+  useQuery({ queryKey: ["alerts-resolved", sectorId ?? "all", page, limit], queryFn: () => api.getResolvedAlerts(sectorId, page, limit), refetchInterval: 3000 });
+
+export const useAlertsSummary = (sectorId?: string) =>
+  useQuery({ queryKey: ["alerts-summary", sectorId ?? "all"], queryFn: () => api.getAlertsSummary(sectorId), refetchInterval: 3000 });
+
 export const useSupervisorHome = (sectorId: string) =>
   useQuery({
     queryKey: ["supervisor-home", sectorId],
@@ -35,7 +44,10 @@ export function useAcknowledgeAlert() {
   return useMutation({
     mutationFn: ({ id, by }: { id: string; by: string }) => api.acknowledgeAlert(id, by),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["alerts"] });
+      qc.invalidateQueries({ queryKey: ["alerts-active"] });
+      qc.invalidateQueries({ queryKey: ["alerts-resolved"] });
+      qc.invalidateQueries({ queryKey: ["alerts-summary"] });
+      qc.invalidateQueries({ queryKey: ["alerts"] }); // keep for any lingering usage
       qc.invalidateQueries({ queryKey: ["admin-dashboard"] });
       qc.invalidateQueries({ queryKey: ["supervisor-home"] });
     },

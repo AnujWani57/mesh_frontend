@@ -147,6 +147,23 @@ export interface Alert {
   coordinates: { x: number; y: number; z: number };
 }
 
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+  };
+}
+
+export interface AlertsSummary {
+  activeCount: number;
+  resolvedCount: number;
+  totalToday: number;
+}
+
+
 export interface SosEvent {
   id: string;
   workerName: string;
