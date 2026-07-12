@@ -208,6 +208,7 @@ export interface SupervisorStats {
   totalWorkers: number;
   devicesOnline: number;
   sosCount: number;
+  activeSosCount: number;
 }
 
 export interface SupervisorEnvironment {

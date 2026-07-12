@@ -39,7 +39,7 @@ async function realRequest<T>(path: string, options?: RequestInit): Promise<T> {
   if (!headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
-  
+
   try {
     const rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
     if (rawSession) {
@@ -65,15 +65,36 @@ async function realRequest<T>(path: string, options?: RequestInit): Promise<T> {
 // ---------------------------------------------------------------------------
 const dummyApi = {
   async login(payload: LoginPayload): Promise<AuthSession> {
+    if (!payload.email || !payload.password) {
+      return delay(Promise.reject(new Error("Email and password are required")));
+    }
+    // Check if this is a known mock user first
     const cred = MOCK_CREDENTIALS[payload.email.toLowerCase()];
-    if (!cred || cred.password !== payload.password) {
-      return delay(Promise.reject(new Error("Invalid email or password")));
+    if (cred) {
+      const user = MOCK_USERS[cred.userId];
+      return delay({ token: `dummy-token-${user.id}`, user: { ...user, lastLogin: new Date().toISOString() } });
     }
-    const user = MOCK_USERS[cred.userId];
-    if (user.role !== payload.role) {
-      return delay(Promise.reject(new Error(`This account is not a ${payload.role} account`)));
-    }
-    return delay({ token: `dummy-token-${user.id}`, user: { ...user, lastLogin: new Date().toISOString() } });
+    // Accept any valid email with any non-empty password
+    const emailName = payload.email.split("@")[0];
+    const displayName = emailName
+      .replace(/[._-]/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    const userId = `u-${payload.role}-${Date.now()}`;
+    const baseUser = {
+      id: userId,
+      role: payload.role,
+      name: displayName,
+      employeeId: `EMP-${Math.random().toString(36).slice(2, 7).toUpperCase()}`,
+      gender: "Male" as const,
+      phone: "",
+      email: payload.email,
+      lastLogin: new Date().toISOString(),
+    };
+    const user: User =
+      payload.role === "supervisor"
+        ? { ...baseUser, role: "supervisor", sectorId: "sector-1", sectorName: "Sector 1", joiningDate: new Date().toISOString() }
+        : { ...baseUser, role: "admin" };
+    return delay({ token: `dummy-token-${userId}`, user });
   },
 
   async signupAdmin(payload: AdminSignupPayload): Promise<AuthSession> {
@@ -223,6 +244,7 @@ const dummyApi = {
       totalWorkers: devices.length,
       devicesOnline: devices.filter((d) => d.status === "online").length,
       sosCount: alerts.filter((a) => a.sectorId === sectorId && a.hazard === "SOS Button Pressed").length,
+      activeSosCount: alerts.filter((a) => a.sectorId === sectorId && a.hazard === "SOS Button Pressed" && a.state === "active").length,
     });
   },
 

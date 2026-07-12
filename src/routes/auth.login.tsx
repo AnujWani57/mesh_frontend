@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { HardHat, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,11 +17,6 @@ export const Route = createFileRoute("/auth/login")({
   component: LoginPage,
 });
 
-const DEMO = {
-  admin: { email: "admin@minemesh.io", password: "admin123" },
-  supervisor: { email: "rahul@minemesh.io", password: "super123" },
-};
-
 function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -29,11 +24,6 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const fillDemo = () => {
-    setEmail(DEMO[role].email);
-    setPassword(DEMO[role].password);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +44,8 @@ function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <HardHat className="h-6 w-6" />
+          <div className="mx-auto">
+            <img src="/logo.png" alt="MineMesh Logo" className="h-14 w-14 rounded-xl object-contain mx-auto" />
           </div>
           <div>
             <CardTitle className="text-2xl">Sign in to MineMesh</CardTitle>
@@ -107,12 +97,6 @@ function LoginPage() {
             </Button>
           </form>
 
-          <button
-            onClick={fillDemo}
-            className="mt-4 w-full rounded-lg border border-dashed border-border p-3 text-xs text-muted-foreground hover:bg-accent"
-          >
-            Use demo {role} credentials
-          </button>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             No account?{" "}

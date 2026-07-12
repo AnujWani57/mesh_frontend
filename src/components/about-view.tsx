@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SENSORS = ["Temperature", "Humidity", "Methane (CH₄)", "Carbon Monoxide (CO)", "Oxygen (O₂)"];
-const TECH = ["ESP32", "AWS IoT Core", "MQTT", "AWS Lambda", "Amazon S3", "React", "Tailwind CSS"];
+const TECH = ["NodeMCU ESP8266", "React.js", "TypeScript", "Tailwind CSS"];
 
 export function AboutView() {
   return (
@@ -32,7 +32,7 @@ export function AboutView() {
               <p className="font-semibold text-foreground">Working principle</p>
               <p className="mt-1">
                 Each wearable measures gas concentrations and vitals, transmits them to its node over
-                a mesh link, and the node forwards batched readings to the cloud via MQTT. Threshold
+                a mesh link, and the node forwards batched readings to the cloud. Threshold
                 breaches or SOS presses raise alerts that supervisors acknowledge in real time.
               </p>
             </div>

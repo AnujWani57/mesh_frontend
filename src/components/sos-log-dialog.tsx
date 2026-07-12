@@ -27,8 +27,8 @@ export function SosLogDialog({
 
 function SosLogTabs({ sectorId }: { sectorId?: string }) {
   // We fetch up to 20 SOS alerts
-  const { data: activeAlerts, isLoading: activeLoading } = useActiveAlerts(sectorId, 1, 20, "SOS Button Pressed");
-  const { data: resolvedAlerts, isLoading: resolvedLoading } = useResolvedAlerts(sectorId, 1, 20, "SOS Button Pressed");
+  const { data: activeAlerts, isLoading: activeLoading } = useActiveAlerts(sectorId, 1, 5, "SOS Button Pressed");
+  const { data: resolvedAlerts, isLoading: resolvedLoading } = useResolvedAlerts(sectorId, 1, 5, "SOS Button Pressed");
 
   return (
     <Tabs defaultValue="active" className="mt-4 w-full">

@@ -1,6 +1,6 @@
 import { useEffect, useState, type ComponentType } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LogOut, Menu, Moon, Sun, HardHat } from "lucide-react";
+import { LogOut, Menu, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -73,9 +73,7 @@ export function DashboardShell({
   const SidebarBody = (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-2 border-b px-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <HardHat className="h-5 w-5" />
-        </div>
+        <img src="/logo.png" alt="MineMesh Logo" className="h-9 w-9 rounded-lg object-contain" />
         <div className="leading-tight">
           <p className="font-bold">MineMesh</p>
           <p className="text-xs capitalize text-muted-foreground">{role} panel</p>
@@ -83,7 +81,10 @@ export function DashboardShell({
       </div>
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {nav.map((item) => {
-          const active = pathname === item.to || pathname.startsWith(item.to + "/");
+          const isRoot = !item.to.slice(1).includes("/");
+          const active = isRoot
+            ? pathname === item.to
+            : pathname === item.to || pathname.startsWith(item.to + "/");
           const Icon = item.icon;
           return (
             <Link

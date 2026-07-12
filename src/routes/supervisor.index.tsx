@@ -30,19 +30,6 @@ function SupervisorHome() {
     return <p className="text-muted-foreground">Loading…</p>;
   }
 
-  const simulateSos = () => {
-    triggerSos({
-      id: `SOS-${Date.now()}`,
-      workerName: "Rahul Meena",
-      deviceId: "WD-203",
-      sectorId: stats.sectorId,
-      sectorName: stats.sectorName,
-      nodeId: "Node 1",
-      coordinates: { x: 20, y: 15, z: 4 },
-      reason: "SOS Button Pressed",
-      time: new Date().toISOString(),
-    });
-  };
 
   return (
     <div>
@@ -51,24 +38,20 @@ function SupervisorHome() {
         description="Live readings and status for your sector."
         action={
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" onClick={simulateSos} title="Simulate SOS">
-              <Siren className="h-4 w-4" />
-            </Button>
             <SosLogDialog sectorId={stats.sectorId}>
               <Button
-                variant={stats.sosCount > 0 ? "destructive" : "secondary"}
+                variant={stats.activeSosCount > 0 ? "destructive" : "secondary"}
                 className="gap-2"
               >
-                <Siren className="h-4 w-4" /> 
-                {stats.sosCount > 0 ? `${stats.sosCount} Active SOS` : "SOS Logs"}
+                <Siren className="h-4 w-4" />
+                {stats.activeSosCount > 0 ? `${stats.activeSosCount} Active SOS` : "SOS Logs"}
               </Button>
             </SosLogDialog>
           </div>
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard label="Sector Status" value={stats.status} icon={Radio} accent={stats.status} />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <StatCard label="Workers" value={stats.totalWorkers} icon={HardHat} />
         <StatCard label="Devices Online" value={stats.devicesOnline} icon={Radio} accent="safe" />
         <StatCard
@@ -92,7 +75,7 @@ function SupervisorHome() {
           <CardHeader>
             <CardTitle className="text-base">Node Status</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 max-h-64 overflow-y-auto pr-1">
             {nodesData.map((n) => (
               <div key={n.id} className="flex items-center justify-between rounded-lg border p-3">
                 <span className="font-medium">{n.name}</span>
