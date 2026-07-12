@@ -42,6 +42,13 @@ export const useResolvedAlerts = (sectorId?: string, page = 1, limit = 5, hazard
 export const useAlertsSummary = (sectorId?: string) =>
   useQuery({ queryKey: ["alerts-summary", sectorId ?? "all"], queryFn: () => api.getAlertsSummary(sectorId), refetchInterval: 3000 });
 
+export const useAlertById = (alertId: string | null) =>
+  useQuery({
+    queryKey: ["alert-detail", alertId],
+    queryFn: () => api.getAlertById(alertId!),
+    enabled: !!alertId,
+  });
+
 export const useSupervisorStats = (sectorId: string) =>
   useQuery({
     queryKey: ["supervisor-stats", sectorId],

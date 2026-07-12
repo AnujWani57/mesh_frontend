@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { useActiveAlerts, useResolvedAlerts, useAlertsSummary, useAcknowledgeAlert } from "@/hooks/use-api";
 import { useAuth } from "@/lib/auth/auth-context";
+import { AlertDetailDialog } from "@/components/alert-detail-dialog";
 
 export const Route = createFileRoute("/supervisor/alerts")({
   head: () => ({ meta: [{ title: "Alerts — MineMesh Supervisor" }] }),
@@ -27,6 +28,8 @@ function AlertsPage() {
   const { user } = useAuth();
   const [activePage, setActivePage] = useState(1);
   const [resolvedPage, setResolvedPage] = useState(1);
+  const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const { data: activeData, isLoading: isActiveLoading } = useActiveAlerts(user?.sectorId, activePage, 10);
   const { data: resolvedData, isLoading: isResolvedLoading } = useResolvedAlerts(user?.sectorId, resolvedPage, 5);
@@ -45,6 +48,11 @@ function AlertsPage() {
       { id, by: user?.name ?? "Supervisor" },
       { onSuccess: () => toast.success(`Alert ${id} acknowledged`) },
     );
+  };
+
+  const handleRowClick = (id: string) => {
+    setSelectedAlertId(id);
+    setDialogOpen(true);
   };
 
   return (
@@ -80,7 +88,11 @@ function AlertsPage() {
                 </TableRow>
               )}
               {active.map((a) => (
-                <TableRow key={a.id}>
+                <TableRow
+                  key={a.id}
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => handleRowClick(a.id)}
+                >
                   <TableCell className="font-medium">{a.id}</TableCell>
                   <TableCell>{a.deviceId}</TableCell>
                   <TableCell className="hidden sm:table-cell">{a.nodeId}</TableCell>
@@ -92,7 +104,14 @@ function AlertsPage() {
                     <StatusBadge status={a.severity} />
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button size="sm" onClick={() => handleAck(a.id)} disabled={acknowledge.isPending}>
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAck(a.id);
+                      }}
+                      disabled={acknowledge.isPending}
+                    >
                       Acknowledge
                     </Button>
                   </TableCell>
@@ -145,7 +164,11 @@ function AlertsPage() {
                 </TableHeader>
                 <TableBody>
                   {resolved.map((a) => (
-                    <TableRow key={a.id}>
+                    <TableRow
+                      key={a.id}
+                      className="cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => handleRowClick(a.id)}
+                    >
                       <TableCell className="font-medium">{a.id}</TableCell>
                       <TableCell>{a.deviceId}</TableCell>
                       <TableCell>{a.hazard}</TableCell>
@@ -184,6 +207,12 @@ function AlertsPage() {
           </Card>
         </>
       )}
+
+      <AlertDetailDialog
+        alertId={selectedAlertId}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 }

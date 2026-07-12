@@ -15,6 +15,21 @@ export interface SensorReadings {
   oxygen: number; // % (O2)
 }
 
+export interface AlertThresholds {
+  temperatureWarning: number;
+  temperatureCritical: number;
+  humidityWarning: number;
+  humidityCritical: number;
+  methaneWarning: number;
+  methaneCritical: number;
+  coWarning: number;
+  coCritical: number;
+  oxygenWarningLow: number;
+  oxygenCriticalLow: number;
+  oxygenWarningHigh: number;
+  oxygenCriticalHigh: number;
+}
+
 export interface User {
   id: string;
   role: Role;
@@ -142,9 +157,10 @@ export interface Alert {
   severity: AlertSeverity;
   time: string; // ISO
   state: AlertState;
-  acknowledgedBy?: string;
-  readings: SensorReadings;
-  coordinates: { x: number; y: number; z: number };
+  acknowledgedBy?: string | null;
+  readings?: SensorReadings;
+  thresholds?: AlertThresholds;
+  coordinates?: { x: number; y: number; z: number };
 }
 
 export interface PaginatedResponse<T> {

@@ -225,6 +225,12 @@ const dummyApi = {
     });
   },
 
+  async getAlertById(id: string): Promise<Alert> {
+    const alert = alerts.find((a) => a.id === id);
+    if (!alert) throw new Error(`Alert ${id} not found`);
+    return delay({ ...alert });
+  },
+
   async acknowledgeAlert(id: string, by: string): Promise<Alert> {
     alerts = alerts.map((a) =>
       a.id === id ? { ...a, state: "resolved", acknowledgedBy: by } : a,
@@ -292,6 +298,7 @@ const realApi = {
     realRequest<PaginatedResponse<Alert>>(`/alerts/resolved?page=${page}&limit=${limit}${sectorId ? `&sectorId=${sectorId}` : ""}${hazard ? `&hazard=${encodeURIComponent(hazard)}` : ""}`),
   getAlertsSummary: (sectorId?: string) =>
     realRequest<AlertsSummary>(`/alerts/summary${sectorId ? `?sectorId=${sectorId}` : ""}`),
+  getAlertById: (id: string) => realRequest<Alert>(`/alerts/${id}`),
   acknowledgeAlert: (id: string, by: string) =>
     realRequest<Alert>(`/alerts/${id}/acknowledge`, { method: "POST", body: JSON.stringify({ by }) }),
   getSupervisorStats: (sectorId: string) => realRequest<SupervisorStats>(`/supervisor/sector/${sectorId}/stats`),
